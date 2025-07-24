@@ -4,6 +4,7 @@ import { AppProps } from "next/app";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ConvexClientProvider } from "./ConvexClientProvider";
+import { AuthProvider } from "@/context/AuthProvider";
 
 export function MyApp({ Component, pageProps }: AppProps) {
   return <Component {...pageProps} />;
@@ -34,7 +35,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ConvexClientProvider>{children}</ConvexClientProvider>
+        <AuthProvider>
+          <ConvexClientProvider>{children}</ConvexClientProvider>
+        </AuthProvider>
       </body>
     </html>
   );

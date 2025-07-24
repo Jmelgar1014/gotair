@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
+import Link from "next/link";
 type NavbarProps = {
   searchInput: string;
   setSearchInput: (val: string) => void;
@@ -51,7 +51,9 @@ const Navbar = ({ searchInput, setSearchInput, onSearch }: NavbarProps) => {
           </Button>
         </div>
 
-        <Button className="bg-blue-600 hover:bg-blue-800">Login</Button>
+        <Button className="bg-blue-600 hover:bg-blue-800">
+          <Link href="/login">Login</Link>
+        </Button>
       </nav>
     </header>
   );

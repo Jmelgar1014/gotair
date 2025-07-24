@@ -14,12 +14,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+import { useAuth0 } from "@auth0/auth0-react";
+
 type loginInfo = {
   email: string;
   password: string;
 };
 
 const LoginCard = () => {
+  const { loginWithRedirect } = useAuth0();
   const [loginData, setLoginData] = useState<loginInfo>({
     email: "",
     password: "",
@@ -83,9 +86,16 @@ const LoginCard = () => {
             </form>
           </CardContent>
           <CardFooter className="flex-col gap-2">
+            <button
+              onClick={() => {
+                loginWithRedirect();
+              }}
+            >
+              login
+            </button>
             <Button
               type="submit"
-              className="w-full bg-blue-600 cursor-pointer"
+              className="w-full bg-blue-600 cursor-pointer font-semibold hover:bg-blue-800"
               onClick={() => console.log(loginData)}
             >
               Login
