@@ -15,6 +15,5 @@ type searchInfo = {
 export default function MapClient({ searchLocation }: searchInfo) {
   const locations = useQuery(api.tasks.get);
 
-  console.log(locations);
   return <LeafletMap list={locations} location={searchLocation} />;
 }

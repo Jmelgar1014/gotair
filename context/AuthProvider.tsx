@@ -11,6 +11,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       authorizationParams={{
         redirect_uri:
           typeof window !== "undefined" ? window.location.origin : "",
+        audience: "gotairlogin",
+        scope: "openid profile email",
       }}
     >
       {children}

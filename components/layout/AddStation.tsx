@@ -3,42 +3,50 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
+
+import { Alert, AlertTitle } from "../ui/alert";
 
 const AddStation = () => {
-  const [formData, setFormdata] = useState({
+  const [fetchState, setFetchState] = useState<string>("");
+
+  type formType = {
+    name: string;
+    address: string;
+    lat: string;
+    lng: string;
+  };
+  const [formData, setFormdata] = useState<formType>({
     name: "",
     address: "",
     lat: "",
     lng: "",
   });
 
-  const addStation = useMutation(api.addStation.addStation); // update path if needed
-
   const handleChange =
     (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
       setFormdata({ ...formData, [field]: e.target.value });
     };
 
-  const handleSubmit = async () => {
-    const lat = parseFloat(formData.lat);
-    const lng = parseFloat(formData.lng);
-
-    if (isNaN(lat) || isNaN(lng)) {
-      alert("Latitude and Longitude must be numbers");
-      return;
-    }
-
-    await addStation({
-      name: formData.name,
-      address: formData.address,
-      lat,
-      lng,
+  const handleSubmit = async (formData: {
+    name: string;
+    address: string;
+    lat: string;
+    lng: string;
+  }) => {
+    const response = await fetch("/api/stations", {
+      method: "POST",
+      headers: { "Content-type": "application/json" },
+      body: JSON.stringify(formData),
     });
 
+    if (!response.ok) {
+      console.log("There is an error");
+      setFetchState("Error");
+    } else {
+      setFetchState("Success");
+    }
+
     setFormdata({ name: "", address: "", lat: "", lng: "" }); // clear form
-    alert("Station added!");
   };
 
   return (
@@ -68,7 +76,20 @@ const AddStation = () => {
             value={formData.lng}
             onChange={handleChange("lng")}
           />
-          <Button onClick={handleSubmit}>Add Station</Button>
+          <Button onClick={() => handleSubmit(formData)}>Add Station</Button>
+          {fetchState === "Error" && (
+            <Alert variant="default">
+              {/* <Terminal /> */}
+              <AlertTitle>Station was not added there is an error</AlertTitle>
+            </Alert>
+          )}
+
+          {fetchState === "Success" && (
+            <Alert variant="default">
+              {/* <Terminal /> */}
+              <AlertTitle>Station Added Successfully</AlertTitle>
+            </Alert>
+          )}
         </CardContent>
       </Card>
     </div>

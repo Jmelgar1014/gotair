@@ -1,21 +1,49 @@
 "use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Navbar from "../components/layout/Navbar";
-export const Dynamic = "force-dynamic";
+export const dynamic = "auto";
 import MapClient from "@/components/layout/MapClient";
 import AddStation from "@/components/layout/AddStation";
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useAuth0 } from "@auth0/auth0-react";
+
 export default function Home() {
-  const router = useRouter();
+  const { isAuthenticated, getIdTokenClaims, getAccessTokenSilently } =
+    useAuth0();
   const searchParams = useSearchParams();
+
   const [searchInput, setSearchInput] = useState<string>("");
   const [searchLocation, setSearchLocation] = useState<[number, number]>([
     51.5073509, -0.1277583,
   ]);
 
   useEffect(() => {
+    const checkRoles = async () => {
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience: "gotairlogin",
+        },
+      });
+
+      const claims = await getIdTokenClaims();
+
+      console.log(token);
+
+      const data = JSON.stringify(claims, null, 2);
+
+      console.log(data);
+    };
+
+    if (!isAuthenticated) {
+      console.log("still waiting ");
+      return;
+    } else {
+      console.log("authenticated");
+      checkRoles();
+    }
     const locationParam = searchParams.get("location");
+
     if (!locationParam) return;
 
     const fetchCoords = async () => {
@@ -35,7 +63,7 @@ export default function Home() {
     };
 
     fetchCoords();
-  }, []);
+  }, [getIdTokenClaims, isAuthenticated, getAccessTokenSilently]);
   const handleSearch = async () => {
     if (!searchInput) return;
 
@@ -57,7 +85,11 @@ export default function Home() {
 
       params.set("location", searchInput);
 
-      router.replace(`?${params.toString()}`);
+      window.history.replaceState(
+        null,
+        "",
+        `?location=${encodeURIComponent(searchInput)}`
+      );
     } catch (error) {
       console.error("Error geocoding:", error);
     }
@@ -89,10 +121,10 @@ export default function Home() {
               </CardContent>
             </Card>
           </div>
-          <AddStation />
+          {isAuthenticated && <AddStation />}
         </section>
         <section className=" flex-1">
-          <div className="p-4 max-w-4xl h-full">
+          <div className="p-4 max-w-5xl h-full">
             <MapClient searchLocation={searchLocation} />
           </div>
         </section>

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { useAuth0 } from "@auth0/auth0-react";
 type NavbarProps = {
   searchInput: string;
   setSearchInput: (val: string) => void;
@@ -11,6 +11,8 @@ type NavbarProps = {
 };
 
 const Navbar = ({ searchInput, setSearchInput, onSearch }: NavbarProps) => {
+  const { isAuthenticated, loginWithRedirect, logout, isLoading } = useAuth0();
+
   const [localInput, setLocalInput] = useState<string>(searchInput); // initialize with current
 
   useEffect(() => {
@@ -21,10 +23,37 @@ const Navbar = ({ searchInput, setSearchInput, onSearch }: NavbarProps) => {
     return () => clearTimeout(handler);
   }, [localInput, setSearchInput]); // include all deps
 
+  const handleLogout = () => {
+    // 1) Persist a “just logged out” flag
+    try {
+      sessionStorage.setItem("justLoggedOut", "true");
+    } catch (e) {
+      console.warn("Unable to write sessionStorage:", e);
+    }
+
+    // 2) Redirect
+    logout({
+      logoutParams: { returnTo: window.location.origin },
+    });
+  };
+
+  const handleLogIn = () => {
+    // 1) Persist a “just logged out” flag
+    try {
+      sessionStorage.setItem("justLoggedIn", "true");
+    } catch (e) {
+      console.warn("Unable to write sessionStorage:", e);
+    }
+
+    // 2) Redirect
+    loginWithRedirect();
+  };
   return (
     <header className="border-b-[1px] border-slate-100 shadow-sm">
       <nav className="grid grid-cols-1 sm:flex sm:justify-around p-4">
-        <span className="text-center text-3xl font-semibold">Got Air?</span>
+        <span className="text-center text-3xl font-semibold items-center flex">
+          Got Air?
+        </span>
 
         <div className="max-w-96 flex p-4">
           <Input
@@ -50,10 +79,25 @@ const Navbar = ({ searchInput, setSearchInput, onSearch }: NavbarProps) => {
             </svg>
           </Button>
         </div>
+        <div className="flex items-center">
+          {!isLoading && isAuthenticated && (
+            <Button
+              className="bg-blue-600 hover:bg-blue-800"
+              onClick={handleLogout}
+            >
+              Logout
+            </Button>
+          )}
 
-        <Button className="bg-blue-600 hover:bg-blue-800">
-          <Link href="/login">Login</Link>
-        </Button>
+          {!isLoading && !isAuthenticated && (
+            <Button
+              className="bg-blue-600 hover:bg-blue-800"
+              onClick={handleLogIn}
+            >
+              Login
+            </Button>
+          )}
+        </div>
       </nav>
     </header>
   );
