@@ -24,23 +24,10 @@ export type locationList = {
   coordinates: [number, number];
 };
 
-// const locationList: locationList[] = [
-//   {
-//     id: 1,
-//     name: "Exxon Mobile",
-//     coordinates: [40.61422, 286.25],
-//   },
-//   {
-//     id: 2,
-//     name: "Exxon Mobile",
-//     coordinates: [40.61511, 286.24699],
-//   },
-// ];
-
 type Props = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   list: any[] | undefined;
-  location: [number, number];
+  location: [number, number] | null;
 };
 
 export default function MyMap({ list, location }: Props) {

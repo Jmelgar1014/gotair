@@ -9,7 +9,7 @@ import { api } from "@/convex/_generated/api";
 const LeafletMap = dynamic(() => import("./Map"), { ssr: false });
 
 type searchInfo = {
-  searchLocation: [number, number];
+  searchLocation: [number, number] | null;
 };
 
 export default function MapClient({ searchLocation }: searchInfo) {

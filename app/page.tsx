@@ -5,18 +5,19 @@ export const dynamic = "auto";
 import MapClient from "@/components/layout/MapClient";
 import AddStation from "@/components/layout/AddStation";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth0 } from "@auth0/auth0-react";
 
 export default function Home() {
+  const router = useRouter();
   const { isAuthenticated, getIdTokenClaims, getAccessTokenSilently } =
     useAuth0();
   const searchParams = useSearchParams();
 
   const [searchInput, setSearchInput] = useState<string>("");
-  const [searchLocation, setSearchLocation] = useState<[number, number]>([
-    51.5073509, -0.1277583,
-  ]);
+  const [searchLocation, setSearchLocation] = useState<[number, number] | null>(
+    null
+  );
 
   useEffect(() => {
     const checkRoles = async () => {
@@ -36,16 +37,20 @@ export default function Home() {
     };
 
     if (!isAuthenticated) {
-      console.log("still waiting ");
-      return;
+      console.log("Not authenticated");
     } else {
       console.log("authenticated");
       checkRoles();
     }
     const locationParam = searchParams.get("location");
 
-    if (!locationParam) return;
+    if (locationParam === null) return;
+    console.log(locationParam);
 
+    if (!locationParam) {
+      setSearchLocation([51.5073509, -0.1277583]);
+      return;
+    }
     const fetchCoords = async () => {
       try {
         const res = await fetch(
@@ -56,14 +61,16 @@ export default function Home() {
           const lat = parseFloat(data[0].lat);
           const lng = parseFloat(data[0].lon);
           setSearchLocation([lat, lng]);
+        } else {
+          setSearchLocation([51.5073509, -0.1277583]);
         }
       } catch (err) {
+        setSearchLocation([51.5073509, -0.1277583]);
         console.error("Failed to fetch geocode:", err);
       }
     };
-
     fetchCoords();
-  }, [getIdTokenClaims, isAuthenticated, getAccessTokenSilently]);
+  }, [getIdTokenClaims, isAuthenticated, getAccessTokenSilently, searchParams]);
   const handleSearch = async () => {
     if (!searchInput) return;
 
@@ -85,11 +92,7 @@ export default function Home() {
 
       params.set("location", searchInput);
 
-      window.history.replaceState(
-        null,
-        "",
-        `?location=${encodeURIComponent(searchInput)}`
-      );
+      router.replace(`?${params.toString()}`);
     } catch (error) {
       console.error("Error geocoding:", error);
     }

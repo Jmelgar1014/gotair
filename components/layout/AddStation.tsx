@@ -42,8 +42,15 @@ const AddStation = () => {
     if (!response.ok) {
       console.log("There is an error");
       setFetchState("Error");
+
+      setTimeout(() => {
+        setFetchState("");
+      }, 5000);
     } else {
       setFetchState("Success");
+      setTimeout(() => {
+        setFetchState("");
+      }, 5000);
     }
 
     setFormdata({ name: "", address: "", lat: "", lng: "" }); // clear form
@@ -56,27 +63,40 @@ const AddStation = () => {
           <CardTitle>Add Station</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
-          <Input
-            placeholder="name"
-            value={formData.name}
-            onChange={handleChange("name")}
-          />
-          <Input
-            placeholder="address"
-            value={formData.address}
-            onChange={handleChange("address")}
-          />
-          <Input
-            placeholder="lat"
-            value={formData.lat}
-            onChange={handleChange("lat")}
-          />
-          <Input
-            placeholder="lng"
-            value={formData.lng}
-            onChange={handleChange("lng")}
-          />
-          <Button onClick={() => handleSubmit(formData)}>Add Station</Button>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSubmit(formData);
+            }}
+          >
+            <Input
+              className="my-2"
+              placeholder="Name"
+              value={formData.name}
+              onChange={handleChange("name")}
+            />
+            <Input
+              className="my-2"
+              placeholder="Address"
+              value={formData.address}
+              onChange={handleChange("address")}
+            />
+            <Input
+              className="my-2"
+              placeholder="Latitude"
+              value={formData.lat}
+              onChange={handleChange("lat")}
+            />
+            <Input
+              className="my-2"
+              placeholder="Longitude"
+              value={formData.lng}
+              onChange={handleChange("lng")}
+            />
+            <Button type="submit" className="w-full cursor-pointer">
+              Add Station
+            </Button>
+          </form>
           {fetchState === "Error" && (
             <Alert variant="default">
               {/* <Terminal /> */}
