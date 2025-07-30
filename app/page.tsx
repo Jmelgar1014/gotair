@@ -20,27 +20,27 @@ export default function Home() {
   );
 
   useEffect(() => {
-    const checkRoles = async () => {
-      const token = await getAccessTokenSilently({
-        authorizationParams: {
-          audience: "gotairlogin",
-        },
-      });
+    // const checkRoles = async () => {
+    //   const token = await getAccessTokenSilently({
+    //     authorizationParams: {
+    //       audience: "gotairlogin",
+    //     },
+    //   });
 
-      const claims = await getIdTokenClaims();
+    //   const claims = await getIdTokenClaims();
 
-      console.log(token);
+    //   console.log(token);
 
-      const data = JSON.stringify(claims, null, 2);
+    //   const data = JSON.stringify(claims, null, 2);
 
-      console.log(data);
-    };
+    //   console.log(data);
+    // };
 
     if (!isAuthenticated) {
       console.log("Not authenticated");
     } else {
       console.log("authenticated");
-      checkRoles();
+      // checkRoles();
     }
     const locationParam = searchParams.get("location");
 
@@ -54,9 +54,13 @@ export default function Home() {
     const fetchCoords = async () => {
       try {
         const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${locationParam}`
+          `/api/search?q=${encodeURIComponent(locationParam)}`,
+          {
+            method: "GET",
+          }
         );
         const data = await res.json();
+        console.log(data);
         if (data.length > 0) {
           const lat = parseFloat(data[0].lat);
           const lng = parseFloat(data[0].lon);
@@ -76,7 +80,10 @@ export default function Home() {
 
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${searchInput}`
+        `/api/search?q=${encodeURIComponent(searchInput)}`,
+        {
+          headers: { "Content-type": "application/json" },
+        }
       );
       const data = await res.json();
 

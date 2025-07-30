@@ -57,8 +57,8 @@ const AddStation = () => {
   };
 
   return (
-    <div className="flex justify-center m-4">
-      <Card className="w-full max-w-96 p-4 sm:w-96 shadow-md">
+    <div className="flex justify-center m-2">
+      <Card className="w-full max-w-96 p-4 sm:w-full shadow-md">
         <CardHeader>
           <CardTitle>Add Station</CardTitle>
         </CardHeader>

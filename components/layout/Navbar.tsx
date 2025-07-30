@@ -51,11 +51,11 @@ const Navbar = ({ searchInput, setSearchInput, onSearch }: NavbarProps) => {
   return (
     <header className="border-b-[1px] border-slate-100 shadow-sm">
       <nav className="grid grid-cols-1 sm:flex sm:justify-around p-4">
-        <span className="text-center text-3xl font-semibold items-center flex">
-          Got Air?
-        </span>
+        <div className="flex justify-center items-center">
+          <span className="text-center text-3xl font-semibold ">Got Air?</span>
+        </div>
 
-        <div className="max-w-96 flex p-4">
+        <div className="max-w-2xl flex p-4 justify-center">
           <form
             className="flex"
             action=""
@@ -65,7 +65,7 @@ const Navbar = ({ searchInput, setSearchInput, onSearch }: NavbarProps) => {
             }}
           >
             <Input
-              className="max-w-96"
+              className="w-full"
               placeholder="zip/state/city"
               value={localInput}
               onChange={(e) => setLocalInput(e.target.value)}
@@ -88,7 +88,7 @@ const Navbar = ({ searchInput, setSearchInput, onSearch }: NavbarProps) => {
             </Button>
           </form>
         </div>
-        <div className="flex items-center">
+        <div className="flex items-center justify-center">
           {!isLoading && isAuthenticated && (
             <Button
               className="bg-blue-600 hover:bg-blue-800"
@@ -100,7 +100,7 @@ const Navbar = ({ searchInput, setSearchInput, onSearch }: NavbarProps) => {
 
           {!isLoading && !isAuthenticated && (
             <Button
-              className="bg-blue-600 hover:bg-blue-800"
+              className="bg-blue-600 hover:bg-blue-800 "
               onClick={handleLogIn}
             >
               Login
