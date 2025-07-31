@@ -10,36 +10,39 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 export default function Home() {
   const router = useRouter();
-  const { isAuthenticated, getIdTokenClaims, getAccessTokenSilently } =
-    useAuth0();
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const searchParams = useSearchParams();
-
+  const [role, setRole] = useState<string>("");
   const [searchInput, setSearchInput] = useState<string>("");
   const [searchLocation, setSearchLocation] = useState<[number, number] | null>(
     null
   );
 
   useEffect(() => {
-    // const checkRoles = async () => {
-    //   const token = await getAccessTokenSilently({
-    //     authorizationParams: {
-    //       audience: "gotairlogin",
-    //     },
-    //   });
+    const checkRoles = async () => {
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience: "gotairlogin",
+        },
+      });
 
-    //   const claims = await getIdTokenClaims();
+      const response = await fetch("/api/permissions", {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
 
-    //   console.log(token);
+      const data = await response.json();
 
-    //   const data = JSON.stringify(claims, null, 2);
+      setRole(data.permission);
+    };
 
-    //   console.log(data);
-    // };
-
-    if (!isAuthenticated) {
-      console.log("Not authenticated");
-    } else {
+    if (isAuthenticated) {
       console.log("authenticated");
+      checkRoles();
+    } else {
+      setRole("");
       // checkRoles();
     }
     const locationParam = searchParams.get("location");
@@ -74,7 +77,43 @@ export default function Home() {
       }
     };
     fetchCoords();
-  }, [getIdTokenClaims, isAuthenticated, getAccessTokenSilently, searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    const locationParam = searchParams.get("location");
+
+    if (locationParam === null) return;
+    console.log(locationParam);
+
+    if (!locationParam) {
+      setSearchLocation([51.5073509, -0.1277583]);
+      return;
+    }
+    const fetchCoords = async () => {
+      try {
+        const res = await fetch(
+          `/api/search?q=${encodeURIComponent(locationParam)}`,
+          {
+            method: "GET",
+          }
+        );
+        const data = await res.json();
+        console.log(data);
+        if (data.length > 0) {
+          const lat = parseFloat(data[0].lat);
+          const lng = parseFloat(data[0].lon);
+          setSearchLocation([lat, lng]);
+        } else {
+          setSearchLocation([51.5073509, -0.1277583]);
+        }
+      } catch (err) {
+        setSearchLocation([51.5073509, -0.1277583]);
+        console.error("Failed to fetch geocode:", err);
+      }
+    };
+    fetchCoords();
+  }, [searchParams]);
   const handleSearch = async () => {
     if (!searchInput) return;
 
@@ -131,7 +170,7 @@ export default function Home() {
               </CardContent>
             </Card>
           </div>
-          {isAuthenticated && <AddStation />}
+          {role === "Admin" && <AddStation />}
         </section>
         <section className=" flex-1">
           <div className="p-4 max-w-5xl h-full">
