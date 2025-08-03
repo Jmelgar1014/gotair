@@ -14,6 +14,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import { toast, Toaster } from "sonner";
 
 interface jwtInfo {
   /** Retrieved securely from auth provider */
@@ -46,6 +48,7 @@ const LocationForm = ({ token }: jwtInfo) => {
       });
 
       const response = await insertLocation.json();
+      toast.success("Successfully Submitted", { duration: 5_000 });
       console.log(response);
       form.reset();
     } catch (error) {
@@ -55,11 +58,11 @@ const LocationForm = ({ token }: jwtInfo) => {
 
   return (
     <>
-      <section className="p-4 m-4">
+      <section className="p-4 m-4  ">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-8  rounded-md p-4 border"
+            className="space-y-8  rounded-md p-4 border max-w-4xl mr-auto ml-auto"
           >
             {labels.map((label) => (
               <FormField
@@ -84,7 +87,7 @@ const LocationForm = ({ token }: jwtInfo) => {
             <Button
               type="submit"
               disabled={form.formState.isSubmitting}
-              className="bg-blue-600 hover:bg-blue-800 cursor-pointer"
+              className="bg-blue-600 hover:bg-blue-800 cursor-pointer w-full sm:w-44"
             >
               Submit
             </Button>
