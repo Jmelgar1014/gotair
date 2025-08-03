@@ -4,12 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { location } from "@/schema/locationSchema";
 import { z } from "zod";
-import { fetchMutation } from "convex/nextjs";
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -23,6 +21,8 @@ interface jwtInfo {
 }
 
 const LocationForm = ({ token }: jwtInfo) => {
+  const labels: string[] = ["name", "address", "city", "state"];
+
   const form = useForm<z.infer<typeof location>>({
     resolver: zodResolver(location),
     defaultValues: {
@@ -61,72 +61,29 @@ const LocationForm = ({ token }: jwtInfo) => {
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-8  rounded-md p-4 border"
           >
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Name" {...field} />
-                  </FormControl>
-                  {/* <FormDescription>
-                  This is your public display name.
-                </FormDescription> */}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Address</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Address" {...field} />
-                  </FormControl>
-                  {/* <FormDescription>
-                  This is your public display name.
-                </FormDescription> */}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="city"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>City</FormLabel>
-                  <FormControl>
-                    <Input placeholder="City" {...field} />
-                  </FormControl>
-                  {/* <FormDescription>
-                  This is your public display name.
-                </FormDescription> */}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="state"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>State</FormLabel>
-                  <FormControl>
-                    <Input placeholder="State" {...field} />
-                  </FormControl>
-                  {/* <FormDescription>
-                  This is your public display name.
-                </FormDescription> */}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {labels.map((label) => (
+              <FormField
+                key={label}
+                control={form.control}
+                name={label as keyof z.infer<typeof location>}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {label.charAt(0).toUpperCase() + label.slice(1)}
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder={label} {...field} />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ))}
+
             <Button
               type="submit"
+              disabled={form.formState.isSubmitting}
               className="bg-blue-600 hover:bg-blue-800 cursor-pointer"
             >
               Submit
