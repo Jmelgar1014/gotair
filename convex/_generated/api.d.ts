@@ -14,6 +14,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as addStation from "../addStation.js";
+import type * as submitLocation from "../submitLocation.js";
 import type * as tasks from "../tasks.js";
 
 /**
@@ -26,6 +27,7 @@ import type * as tasks from "../tasks.js";
  */
 declare const fullApi: ApiFromModules<{
   addStation: typeof addStation;
+  submitLocation: typeof submitLocation;
   tasks: typeof tasks;
 }>;
 export declare const api: FilterApi<

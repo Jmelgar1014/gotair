@@ -10,6 +10,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 export default function Home() {
   const router = useRouter();
+  const [jwtToken, setJwtToken] = useState<string>("");
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const searchParams = useSearchParams();
   const [role, setRole] = useState<string>("");
@@ -34,7 +35,7 @@ export default function Home() {
       });
 
       const data = await response.json();
-
+      setJwtToken(token);
       setRole(data.permission);
     };
 
@@ -152,6 +153,7 @@ export default function Home() {
         searchInput={searchInput}
         setSearchInput={setSearchInput}
         onSearch={handleSearch}
+        role={role}
       />
 
       <main className="grid grid-cols-1 gap-8 w-full sm:flex  ">
@@ -170,10 +172,10 @@ export default function Home() {
               </CardContent>
             </Card>
           </div>
-          {role === "Admin" && <AddStation />}
+          {role === "Admin" && <AddStation jwt={jwtToken} />}
         </section>
         <section className=" flex-1">
-          <div className="p-4 max-w-5xl h-full">
+          <div className="p-4 max-w-5xl h-full ">
             <MapClient searchLocation={searchLocation} />
           </div>
         </section>

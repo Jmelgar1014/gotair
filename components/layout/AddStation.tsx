@@ -6,7 +6,11 @@ import { Button } from "../ui/button";
 
 import { Alert, AlertTitle } from "../ui/alert";
 
-const AddStation = () => {
+interface jwtType {
+  jwt: string;
+}
+
+const AddStation = ({ jwt }: jwtType) => {
   const [fetchState, setFetchState] = useState<string>("");
 
   type formType = {
@@ -35,7 +39,10 @@ const AddStation = () => {
   }) => {
     const response = await fetch("/api/stations", {
       method: "POST",
-      headers: { "Content-type": "application/json" },
+      headers: {
+        "Content-type": "application/json",
+        authorization: `Bearer ${jwt}`,
+      },
       body: JSON.stringify(formData),
     });
 

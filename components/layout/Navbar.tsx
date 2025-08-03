@@ -4,13 +4,20 @@ import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth0 } from "@auth0/auth0-react";
+import Link from "next/link";
 type NavbarProps = {
   searchInput: string;
   setSearchInput: (val: string) => void;
   onSearch: () => void;
+  role: string;
 };
 
-const Navbar = ({ searchInput, setSearchInput, onSearch }: NavbarProps) => {
+const Navbar = ({
+  searchInput,
+  setSearchInput,
+  onSearch,
+  role,
+}: NavbarProps) => {
   const { isAuthenticated, loginWithRedirect, logout, isLoading } = useAuth0();
 
   const [localInput, setLocalInput] = useState<string>(searchInput); // initialize with current
@@ -90,12 +97,19 @@ const Navbar = ({ searchInput, setSearchInput, onSearch }: NavbarProps) => {
         </div>
         <div className="flex items-center justify-center">
           {!isLoading && isAuthenticated && (
-            <Button
-              className="bg-blue-600 hover:bg-blue-800"
-              onClick={handleLogout}
-            >
-              Logout
-            </Button>
+            <div>
+              {role !== "Admin" && (
+                <Button className="bg-blue-600 hover:bg-blue-800 mr-4">
+                  <Link href="/submit">Add Location</Link>
+                </Button>
+              )}
+              <Button
+                className="bg-blue-600 hover:bg-blue-800"
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
+            </div>
           )}
 
           {!isLoading && !isAuthenticated && (

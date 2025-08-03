@@ -55,17 +55,17 @@ export async function POST(req: Request) {
   try {
     const decoded = (await verifyJwt()) as jwtPayload;
 
-    if (decoded.permissions[0] === "Admin") {
-      const { name, address, lat, lng } = await req.json();
+    const id = decoded.sub;
 
-      const langNum = parseFloat(lat);
-      const lngNum = parseFloat(lng);
+    if (decoded.permissions[0] === "baseUser") {
+      const { name, address, city, state } = await req.json();
 
-      await fetchMutation(api.addStation.addStation, {
+      await fetchMutation(api.submitLocation.submit, {
         name: name,
         address: address,
-        lat: langNum,
-        lng: lngNum,
+        city: city,
+        state: state,
+        userId: id,
       });
       return NextResponse.json(
         { success: true, station: "created" },
