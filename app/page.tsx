@@ -7,43 +7,27 @@ import AddStation from "@/components/layout/AddStation";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth0 } from "@auth0/auth0-react";
+import { usePermissionContext } from "@/context/PermissionProvider";
 
 export default function Home() {
+  const { authToken, role } = usePermissionContext();
   const router = useRouter();
-  const [jwtToken, setJwtToken] = useState<string>("");
-  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+  // const [jwtToken, setJwtToken] = useState<string>("");
+  const { isAuthenticated } = useAuth0();
   const searchParams = useSearchParams();
-  const [role, setRole] = useState<string>("");
+  // const [role, setRole] = useState<string>("");
   const [searchInput, setSearchInput] = useState<string>("");
   const [searchLocation, setSearchLocation] = useState<[number, number] | null>(
     null
   );
 
   useEffect(() => {
-    const checkRoles = async () => {
-      const token = await getAccessTokenSilently({
-        authorizationParams: {
-          audience: "gotairlogin",
-        },
-      });
-
-      const response = await fetch("/api/permissions", {
-        method: "POST",
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-      setJwtToken(token);
-      setRole(data.permission);
-    };
-
     if (isAuthenticated) {
       console.log("authenticated");
-      checkRoles();
+      // checkRoles();
     } else {
-      setRole("");
+      console.log("not authenticated");
+      // setRole("");
       // checkRoles();
     }
     const locationParam = searchParams.get("location");
@@ -172,7 +156,7 @@ export default function Home() {
               </CardContent>
             </Card>
           </div>
-          {role === "Admin" && <AddStation jwt={jwtToken} />}
+          {role === "Admin" && <AddStation jwt={authToken} />}
         </section>
         <section className=" flex-1">
           <div className="p-4 max-w-5xl h-full ">

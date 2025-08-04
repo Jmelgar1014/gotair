@@ -50,6 +50,12 @@ export default function MyMap({ list, location }: Props) {
           <Marker key={location._id} position={[location.lat, location.lng]}>
             <Popup>
               {location.name} <br /> {location.address}
+              {/* <p
+                className="text-blue-800 font-semibold cursor-pointer hover:underline"
+                onClick={() => console.log("testing")}
+              >
+                More Information
+              </p> */}
             </Popup>
           </Marker>
         );

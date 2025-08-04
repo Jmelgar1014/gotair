@@ -6,11 +6,13 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useState } from "react";
 import LoadingSkeleton from "@/components/layout/LoadingSkeleton";
 import { useRouter } from "next/navigation";
+import { usePermissionContext } from "@/context/PermissionProvider";
 const Page = () => {
   const router = useRouter();
-  const { isAuthenticated, getAccessTokenSilently, isLoading } = useAuth0();
-  const [token, setToken] = useState<string>("");
-  const [role, setRole] = useState<string>("");
+  const { authToken, role, result } = usePermissionContext();
+  const { isAuthenticated, isLoading } = useAuth0();
+  // const [token, setToken] = useState<string>("");
+  // const [role, setRole] = useState<string>("");
   useEffect(() => {
     if (isLoading) return;
     const checkRoles = async () => {
@@ -19,33 +21,33 @@ const Page = () => {
         return;
       }
       try {
-        const token = await getAccessTokenSilently({
-          authorizationParams: {
-            audience: "gotairlogin",
-          },
-        });
+        // const token = await getAccessTokenSilently({
+        //   authorizationParams: {
+        //     audience: "gotairlogin",
+        //   },
+        // });
 
-        const response = await fetch("/api/permissions", {
-          method: "POST",
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        });
+        // const response = await fetch("/api/permissions", {
+        //   method: "POST",
+        //   headers: {
+        //     authorization: `Bearer ${token}`,
+        //   },
+        // });
 
-        if (!response.ok) {
+        if (!result) {
           router.push("/");
           console.error("Invalid Token");
           return;
         }
-        const result = await response.json();
+        // const result = await response.json();
 
-        if (!result.permission?.includes("baseUser")) {
+        if (!role?.includes("baseUser")) {
           router.push("/");
           return;
         }
 
-        setRole(result.permission);
-        setToken(token);
+        // setRole(result.permission);
+        // setToken(token);
       } catch (error) {
         console.log(error);
       }
@@ -62,7 +64,7 @@ const Page = () => {
         role?.includes("baseUser") && (
           <>
             <AddStationNavBar />
-            <LocationForm token={token} />
+            <LocationForm token={authToken} />
           </>
         )
       )}

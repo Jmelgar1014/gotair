@@ -6,6 +6,7 @@ import "./globals.css";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import { AuthProvider } from "@/context/AuthProvider";
 import { Providers } from "@/components/layout/Providers";
+import { PermissionProvider } from "@/context/PermissionProvider";
 
 export function MyApp({ Component, pageProps }: AppProps) {
   return <Component {...pageProps} />;
@@ -38,7 +39,9 @@ export default function RootLayout({
       >
         <AuthProvider>
           <ConvexClientProvider>
-            <Providers>{children}</Providers>
+            <Providers>
+              <PermissionProvider>{children}</PermissionProvider>
+            </Providers>
           </ConvexClientProvider>
         </AuthProvider>
       </body>

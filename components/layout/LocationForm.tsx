@@ -14,8 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 
 interface jwtInfo {
   /** Retrieved securely from auth provider */
