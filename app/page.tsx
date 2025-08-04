@@ -10,33 +10,24 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { usePermissionContext } from "@/context/PermissionProvider";
 
 export default function Home() {
+  const DEFAULT_LOCATION: [number, number] = [51.5073509, -0.1277583];
   const { authToken, role } = usePermissionContext();
   const router = useRouter();
-  // const [jwtToken, setJwtToken] = useState<string>("");
   const { isAuthenticated } = useAuth0();
   const searchParams = useSearchParams();
-  // const [role, setRole] = useState<string>("");
   const [searchInput, setSearchInput] = useState<string>("");
   const [searchLocation, setSearchLocation] = useState<[number, number] | null>(
     null
   );
 
   useEffect(() => {
-    if (isAuthenticated) {
-      console.log("authenticated");
-      // checkRoles();
-    } else {
-      console.log("not authenticated");
-      // setRole("");
-      // checkRoles();
-    }
     const locationParam = searchParams.get("location");
 
     if (locationParam === null) return;
     console.log(locationParam);
 
     if (!locationParam) {
-      setSearchLocation([51.5073509, -0.1277583]);
+      setSearchLocation(DEFAULT_LOCATION);
       return;
     }
     const fetchCoords = async () => {
@@ -54,51 +45,17 @@ export default function Home() {
           const lng = parseFloat(data[0].lon);
           setSearchLocation([lat, lng]);
         } else {
-          setSearchLocation([51.5073509, -0.1277583]);
+          setSearchLocation(DEFAULT_LOCATION);
         }
       } catch (err) {
-        setSearchLocation([51.5073509, -0.1277583]);
+        setSearchLocation(DEFAULT_LOCATION);
         console.error("Failed to fetch geocode:", err);
       }
     };
     fetchCoords();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated]);
-
-  useEffect(() => {
-    const locationParam = searchParams.get("location");
-
-    if (locationParam === null) return;
-    console.log(locationParam);
-
-    if (!locationParam) {
-      setSearchLocation([51.5073509, -0.1277583]);
-      return;
-    }
-    const fetchCoords = async () => {
-      try {
-        const res = await fetch(
-          `/api/search?q=${encodeURIComponent(locationParam)}`,
-          {
-            method: "GET",
-          }
-        );
-        const data = await res.json();
-        console.log(data);
-        if (data.length > 0) {
-          const lat = parseFloat(data[0].lat);
-          const lng = parseFloat(data[0].lon);
-          setSearchLocation([lat, lng]);
-        } else {
-          setSearchLocation([51.5073509, -0.1277583]);
-        }
-      } catch (err) {
-        setSearchLocation([51.5073509, -0.1277583]);
-        console.error("Failed to fetch geocode:", err);
-      }
-    };
-    fetchCoords();
   }, [searchParams]);
+
   const handleSearch = async () => {
     if (!searchInput) return;
 
