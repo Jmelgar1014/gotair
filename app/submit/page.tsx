@@ -3,7 +3,6 @@ import React, { useEffect } from "react";
 import AddStationNavBar from "@/components/layout/AddStationNavBar";
 import LocationForm from "@/components/layout/LocationForm";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useState } from "react";
 import LoadingSkeleton from "@/components/layout/LoadingSkeleton";
 import { useRouter } from "next/navigation";
 import { usePermissionContext } from "@/context/PermissionProvider";
@@ -21,19 +20,6 @@ const Page = () => {
         return;
       }
       try {
-        // const token = await getAccessTokenSilently({
-        //   authorizationParams: {
-        //     audience: "gotairlogin",
-        //   },
-        // });
-
-        // const response = await fetch("/api/permissions", {
-        //   method: "POST",
-        //   headers: {
-        //     authorization: `Bearer ${token}`,
-        //   },
-        // });
-
         if (!result) {
           router.push("/");
           console.error("Invalid Token");

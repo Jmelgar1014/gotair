@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { api } from "@/convex/_generated/api";
+import { fetchQuery } from "convex/nextjs";
 import { fetchMutation } from "convex/nextjs";
 import jwt from "jsonwebtoken";
 import jwtksClient from "jwks-rsa";
@@ -29,6 +30,67 @@ const getKey: GetPublicKeyOrSecret = (header, callback) => {
     }
   });
 };
+
+export async function GET(req: Request) {
+  const authHeader = req.headers.get("authorization");
+
+  if (!authHeader) {
+    return Response.json({ error: "No token provided" }, { status: 401 });
+  }
+
+  const parts = authHeader.split(" ");
+  const token = parts.length > 1 ? parts[1] : null;
+
+  if (!token) {
+    return Response.json({ error: "Token malformed" }, { status: 401 });
+  }
+
+  const verifyJwt = () =>
+    new Promise((resolve, reject) => {
+      jwt.verify(token, getKey, { algorithms: ["RS256"] }, (err, decoded) => {
+        if (err) reject(err);
+        else resolve(decoded);
+      });
+    });
+
+  try {
+    const decoded = (await verifyJwt()) as jwtPayload;
+
+    const id = decoded.sub;
+
+    if (decoded.permissions[0] === "Admin") {
+      const data = await fetchQuery(api.submitLocation.getSubmits);
+
+      type responseType = {
+        name: string;
+        street: string;
+        city: string;
+        state: string;
+        user: string;
+      };
+
+      console.log(data);
+      const result: responseType[] = [];
+
+      const returnArray = data.map((row) => {
+        const newData = {
+          name: row.name,
+          street: row.address,
+          city: row.city,
+          state: row.state,
+          user: row._id,
+        };
+        result.push(newData);
+      });
+
+      return NextResponse.json(result);
+    } else {
+      return;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 export async function POST(req: Request) {
   const authHeader = req.headers.get("authorization");

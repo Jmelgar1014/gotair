@@ -6,14 +6,12 @@ import MapClient from "@/components/layout/MapClient";
 import AddStation from "@/components/layout/AddStation";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useAuth0 } from "@auth0/auth0-react";
 import { usePermissionContext } from "@/context/PermissionProvider";
 
 export default function Home() {
   const DEFAULT_LOCATION: [number, number] = [51.5073509, -0.1277583];
   const { authToken, role } = usePermissionContext();
   const router = useRouter();
-  const { isAuthenticated } = useAuth0();
   const searchParams = useSearchParams();
   const [searchInput, setSearchInput] = useState<string>("");
   const [searchLocation, setSearchLocation] = useState<[number, number] | null>(
