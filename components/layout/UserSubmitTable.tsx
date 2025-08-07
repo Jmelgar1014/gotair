@@ -13,7 +13,6 @@ import { responseType } from "@/app/api/submit/route";
 
 type UserSubmitTableProps = {
   data: responseType[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 };
 
 const UserSubmitTable = ({ data }: UserSubmitTableProps) => {

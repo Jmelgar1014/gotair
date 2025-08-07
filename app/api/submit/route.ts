@@ -69,7 +69,7 @@ export async function GET(req: Request) {
 
     if (decoded.permissions[0] === "Admin") {
       const data = await fetchQuery(api.submitLocation.getSubmits, {
-        paginationOpts: { numItems: 10, cursor: cursor ?? null },
+        paginationOpts: { numItems: 10, cursor: cursor || null },
       });
 
       console.log(data);
