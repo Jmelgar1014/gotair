@@ -6,6 +6,14 @@ import jwt from "jsonwebtoken";
 import jwtksClient from "jwks-rsa";
 import { GetPublicKeyOrSecret } from "jsonwebtoken";
 
+export type responseType = {
+  name: string;
+  street: string;
+  city: string;
+  state: string;
+  user: string;
+};
+
 interface jwtPayload {
   aud: string[];
   azp: string;
@@ -56,36 +64,32 @@ export async function GET(req: Request) {
   try {
     const decoded = (await verifyJwt()) as jwtPayload;
 
-    const id = decoded.sub;
+    const { searchParams } = new URL(req.url);
+    const cursor = searchParams.get("cursor");
 
     if (decoded.permissions[0] === "Admin") {
-      const data = await fetchQuery(api.submitLocation.getSubmits);
-
-      type responseType = {
-        name: string;
-        street: string;
-        city: string;
-        state: string;
-        user: string;
-      };
-
-      console.log(data);
-      const result: responseType[] = [];
-
-      const returnArray = data.map((row) => {
-        const newData = {
-          name: row.name,
-          street: row.address,
-          city: row.city,
-          state: row.state,
-          user: row._id,
-        };
-        result.push(newData);
+      const data = await fetchQuery(api.submitLocation.getSubmits, {
+        paginationOpts: { numItems: 10, cursor: cursor ?? null },
       });
 
-      return NextResponse.json(result);
+      console.log(data);
+
+      // const result: responseType[] = data.map((row) => ({
+      //   name: row.name,
+      //   street: row.address,
+      //   city: row.city,
+      //   state: row.state,
+      //   user: row._id,
+
+      //   // result.push(newData);
+      // }));
+      const result = data.page;
+
+      console.log(result);
+
+      return NextResponse.json(data);
     } else {
-      return;
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
   } catch (error) {
     console.log(error);
@@ -134,7 +138,7 @@ export async function POST(req: Request) {
         { status: 201 }
       );
     } else {
-      return;
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
   } catch (error) {
     console.log(error);

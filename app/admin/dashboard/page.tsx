@@ -4,16 +4,36 @@ import UserSubmitTable from "@/components/layout/UserSubmitTable";
 import React, { useEffect, useState } from "react";
 
 import { usePermissionContext } from "@/context/PermissionProvider";
+import { responseType } from "@/app/api/submit/route";
+import { Button } from "@/components/ui/button";
 
 const Page = () => {
   const { authToken, role } = usePermissionContext();
-  const [submission, setSubmissions] = useState([]);
-  // console.log(authToken);//
+  const [submission, setSubmissions] = useState<responseType[]>([]);
+  const [cursor, setCursor] = useState<string>("");
+
+  const handleQuery = async (token: string) => {
+    console.log("dkjsdfkldfsjdkfs");
+    const response = await fetch(`/api/submit?cursor=${token}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${authToken}`,
+      },
+    });
+
+    const data = await response.json();
+
+    console.log(data);
+    setSubmissions(data.page);
+    setCursor(data.continueCursor);
+
+    return data;
+  };
 
   useEffect(() => {
     if (!authToken) return;
     const getRowData = async () => {
-      //console.log(authToken);
       const response = await fetch("/api/submit", {
         method: "GET",
         headers: {
@@ -23,14 +43,14 @@ const Page = () => {
       });
 
       const data = await response.json();
-      setSubmissions(data);
-
       console.log(data);
+      setCursor(data.continueCursor);
+      setSubmissions(data.page);
     };
     try {
       getRowData();
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }, [authToken]);
 
@@ -43,6 +63,7 @@ const Page = () => {
             <div className="flex justify-center mt-8">
               <div className="m-4 border rounded-md p-2 w-full sm:max-w-4xl">
                 <UserSubmitTable data={submission} />
+                <Button onClick={() => handleQuery(cursor)}>Next Page</Button>
               </div>
             </div>
           </section>

@@ -10,8 +10,7 @@ const Page = () => {
   const router = useRouter();
   const { authToken, role, result } = usePermissionContext();
   const { isAuthenticated, isLoading } = useAuth0();
-  // const [token, setToken] = useState<string>("");
-  // const [role, setRole] = useState<string>("");
+
   useEffect(() => {
     if (isLoading) return;
     const checkRoles = async () => {

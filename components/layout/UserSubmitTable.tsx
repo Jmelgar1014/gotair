@@ -9,17 +9,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "../ui/button";
-
-type tableData = {
-  name: string;
-  street: string;
-  city: string;
-  state: string;
-  user: string;
-};
+import { responseType } from "@/app/api/submit/route";
 
 type UserSubmitTableProps = {
-  data: tableData[];
+  data: responseType[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 };
 
 const UserSubmitTable = ({ data }: UserSubmitTableProps) => {

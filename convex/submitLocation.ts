@@ -1,10 +1,23 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { paginationOptsValidator } from "convex/server";
 
 export const getSubmits = query({
-  args: {},
-  handler: async (ctx) => {
-    return await ctx.db.query("submitLocation").collect();
+  args: { paginationOpts: paginationOptsValidator },
+  handler: async (ctx, args) => {
+    const result = await ctx.db
+      .query("submitLocation")
+      .paginate(args.paginationOpts);
+    return {
+      ...result,
+      page: result.page.map((item) => ({
+        name: item.name,
+        street: item.address,
+        city: item.city,
+        state: item.state,
+        user: item.userId,
+      })),
+    };
   },
 });
 
