@@ -44,6 +44,8 @@ const Navbar = ({
     });
   };
 
+  console.log(role);
+
   const handleLogIn = () => {
     // 1) Persist a “just logged out” flag
     try {
@@ -96,26 +98,27 @@ const Navbar = ({
           </form>
         </div>
         <div className="flex items-center justify-center">
-          {!isLoading && isAuthenticated && (
-            <div>
-              {role === "Admin" && (
-                <Button className="bg-blue-600 hover:bg-blue-800 mr-4">
-                  <Link href="/admin/dashboard">Dashboard</Link>
-                </Button>
-              )}
-              {role !== "Admin" && (
-                <Button className="bg-blue-600 hover:bg-blue-800 mr-4">
-                  <Link href="/submit">Add Location</Link>
-                </Button>
-              )}
-              <Button
-                className="bg-blue-600 hover:bg-blue-800"
-                onClick={handleLogout}
-              >
-                Logout
-              </Button>
-            </div>
-          )}
+          <div>
+            {role !== "" && isAuthenticated && (
+              <>
+                {role === "Admin" ? (
+                  <Button className="bg-blue-600 hover:bg-blue-800 mr-4">
+                    <Link href="/admin/dashboard">Dashboard</Link>
+                  </Button>
+                ) : (
+                  <Button className="bg-blue-600 hover:bg-blue-800 mr-4">
+                    <Link href="/submit">Add Location</Link>
+                  </Button>
+                )}
+              </>
+            )}
+            <Button
+              className="bg-blue-600 hover:bg-blue-800"
+              onClick={handleLogout}
+            >
+              Logout
+            </Button>
+          </div>
 
           {!isLoading && !isAuthenticated && (
             <Button
