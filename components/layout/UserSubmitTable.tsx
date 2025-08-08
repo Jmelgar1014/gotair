@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "../ui/button";
 import { responseType } from "@/app/api/submit/route";
+import SubmitSelect from "./SubmitSelect";
 
 type UserSubmitTableProps = {
   data: responseType[];
@@ -39,7 +40,8 @@ const UserSubmitTable = ({ data }: UserSubmitTableProps) => {
               <TableCell className="text-right">{row.state}</TableCell>
               <TableCell className="text-right">{row.user}</TableCell>
               <TableCell className="text-right">
-                <Button>False</Button>
+                <SubmitSelect />
+                {/* <Button className="cursor-pointer">False</Button> */}
               </TableCell>
             </TableRow>
           ))}

@@ -101,6 +101,7 @@ const Page = () => {
     };
 
     loadInitialData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authToken]);
 
   const hasPrevPage = currentPageIndex > 0;

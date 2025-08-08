@@ -4,6 +4,7 @@ import { fetchMutation } from "convex/nextjs";
 import jwt from "jsonwebtoken";
 import jwtksClient from "jwks-rsa";
 import { GetPublicKeyOrSecret } from "jsonwebtoken";
+import { addStationAdmin } from "@/schema/addStationSchema";
 
 interface jwtPayload {
   aud: string[];
@@ -56,20 +57,18 @@ export async function POST(req: Request) {
     const decoded = (await verifyJwt()) as jwtPayload;
 
     if (decoded.permissions[0] === "Admin") {
-      const { name, address, lat, lng } = await req.json();
+      const json = await req.json();
 
-      const langNum = parseFloat(lat);
-      const lngNum = parseFloat(lng);
+      const parsed = addStationAdmin.safeParse(json);
 
-      await fetchMutation(api.addStation.addStation, {
-        name: name,
-        address: address,
-        lat: langNum,
-        lng: lngNum,
-      });
+      if (!parsed.success) {
+        return NextResponse.json({ error: parsed.error }, { status: 400 });
+      }
+
+      await fetchMutation(api.addStation.addStation, parsed.data);
       return NextResponse.json(
         { success: true, station: "created" },
-        { status: 201 }
+        { status: 200 }
       );
     } else {
       return;

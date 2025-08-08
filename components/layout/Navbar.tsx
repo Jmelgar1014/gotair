@@ -98,6 +98,11 @@ const Navbar = ({
         <div className="flex items-center justify-center">
           {!isLoading && isAuthenticated && (
             <div>
+              {role === "Admin" && (
+                <Button className="bg-blue-600 hover:bg-blue-800 mr-4">
+                  <Link href="/admin/dashboard">Dashboard</Link>
+                </Button>
+              )}
               {role !== "Admin" && (
                 <Button className="bg-blue-600 hover:bg-blue-800 mr-4">
                   <Link href="/submit">Add Location</Link>

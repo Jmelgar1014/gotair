@@ -5,6 +5,8 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 
 import { Alert, AlertTitle } from "../ui/alert";
+import { addStationAdmin } from "@/schema/addStationSchema";
+import { z } from "zod";
 
 interface jwtType {
   jwt: string;
@@ -13,17 +15,19 @@ interface jwtType {
 const AddStation = ({ jwt }: jwtType) => {
   const [fetchState, setFetchState] = useState<string>("");
 
-  type formType = {
-    name: string;
-    address: string;
-    lat: string;
-    lng: string;
-  };
-  const [formData, setFormdata] = useState<formType>({
+  // type formType = {
+  //   name: string;
+  //   address: string;
+  //   lat: string;
+  //   lng: string;
+  // };
+
+  type addStationType = z.infer<typeof addStationAdmin>;
+  const [formData, setFormdata] = useState<addStationType>({
     name: "",
     address: "",
-    lat: "",
-    lng: "",
+    lat: 0,
+    lng: 0,
   });
 
   const handleChange =
@@ -31,36 +35,41 @@ const AddStation = ({ jwt }: jwtType) => {
       setFormdata({ ...formData, [field]: e.target.value });
     };
 
-  const handleSubmit = async (formData: {
-    name: string;
-    address: string;
-    lat: string;
-    lng: string;
-  }) => {
-    const response = await fetch("/api/stations", {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-        authorization: `Bearer ${jwt}`,
-      },
-      body: JSON.stringify(formData),
-    });
+  const handleSubmit = async (formData: addStationType) => {
+    const parsed = addStationAdmin.safeParse(formData);
 
-    if (!response.ok) {
-      console.log("There is an error");
-      setFetchState("Error");
-
-      setTimeout(() => {
-        setFetchState("");
-      }, 5000);
-    } else {
-      setFetchState("Success");
-      setTimeout(() => {
-        setFetchState("");
-      }, 5000);
+    if (!parsed.success) {
+      console.log("there is an error with input");
+      return;
     }
 
-    setFormdata({ name: "", address: "", lat: "", lng: "" }); // clear form
+    try {
+      const response = await fetch("/api/stations", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          authorization: `Bearer ${jwt}`,
+        },
+        body: JSON.stringify(parsed.data),
+      });
+
+      if (!response.ok) {
+        console.log("There is an error");
+        setFetchState("Error");
+
+        setTimeout(() => {
+          setFetchState("");
+        }, 5000);
+      } else {
+        setFetchState("Success");
+        setTimeout(() => {
+          setFetchState("");
+        }, 5000);
+      }
+      setFormdata({ name: "", address: "", lat: 0, lng: 0 }); // clear form
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -90,12 +99,14 @@ const AddStation = ({ jwt }: jwtType) => {
             />
             <Input
               className="my-2"
+              type="number"
               placeholder="Latitude"
               value={formData.lat}
               onChange={handleChange("lat")}
             />
             <Input
               className="my-2"
+              type="number"
               placeholder="Longitude"
               value={formData.lng}
               onChange={handleChange("lng")}
