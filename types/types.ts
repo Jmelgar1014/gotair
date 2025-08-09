@@ -1,7 +1,7 @@
-import { responseType } from "@/app/api/submit/route";
+import { userSubmitType } from "@/app/api/submit/route";
 
 export type paginationType = {
-  page: responseType[];
+  page: userSubmitType[];
   isDone: boolean;
   continueCursor: string;
   splitCursor?: string | null;

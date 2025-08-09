@@ -3,13 +3,13 @@ import AddStationNavBar from "@/components/layout/AddStationNavBar";
 import UserSubmitTable from "@/components/layout/UserSubmitTable";
 import React, { useEffect, useState, useCallback } from "react";
 import { usePermissionContext } from "@/context/PermissionProvider";
-import { responseType } from "@/app/api/submit/route";
+import { userSubmitType } from "@/app/api/submit/route";
 import { Button } from "@/components/ui/button";
-import { paginationType } from "@/types/types";
+import { locationType } from "@/schema/submitLocationSchema";
 
 const Page = () => {
   const { authToken, role } = usePermissionContext();
-  const [submission, setSubmissions] = useState<responseType[]>([]);
+  const [submission, setSubmissions] = useState<userSubmitType[]>([]);
   const [currentCursor, setCurrentCursor] = useState<string>("");
   const [nextCursor, setNextCursor] = useState<string>("");
   const [cursorHistory, setCursorHistory] = useState<string[]>([""]);
@@ -46,7 +46,7 @@ const Page = () => {
     [authToken, loading]
   );
 
-  const updatePageData = (data: paginationType, cursor: string) => {
+  const updatePageData = (data: locationType, cursor: string) => {
     setSubmissions(data.page || []);
     setCurrentCursor(cursor);
     setNextCursor(data.continueCursor || "");

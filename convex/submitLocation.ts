@@ -16,6 +16,7 @@ export const getSubmits = query({
         city: item.city,
         state: item.state,
         user: item.userId,
+        id: item._id,
       })),
     };
   },

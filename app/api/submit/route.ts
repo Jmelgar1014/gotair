@@ -5,14 +5,14 @@ import { fetchMutation } from "convex/nextjs";
 import jwt from "jsonwebtoken";
 import jwtksClient from "jwks-rsa";
 import { GetPublicKeyOrSecret } from "jsonwebtoken";
+import { z } from "zod";
+import {
+  getLocationType,
+  insertLocationType,
+  submitLocationType,
+} from "@/schema/submitLocationSchema";
 
-export type responseType = {
-  name: string;
-  street: string;
-  city: string;
-  state: string;
-  user: string;
-};
+export type userSubmitType = z.infer<typeof submitLocationType>;
 
 interface jwtPayload {
   aud: string[];
@@ -67,27 +67,20 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const cursor = searchParams.get("cursor");
 
-    if (decoded.permissions[0] === "Admin") {
+    if (decoded.permissions.includes("Admin")) {
       const data = await fetchQuery(api.submitLocation.getSubmits, {
         paginationOpts: { numItems: 10, cursor: cursor || null },
       });
 
-      console.log(data);
+      const parsed = getLocationType.safeParse(data);
 
-      // const result: responseType[] = data.map((row) => ({
-      //   name: row.name,
-      //   street: row.address,
-      //   city: row.city,
-      //   state: row.state,
-      //   user: row._id,
+      if (!parsed.success) {
+        return NextResponse.json({
+          error: "Response Error",
+        });
+      }
 
-      //   // result.push(newData);
-      // }));
-      const result = data.page;
-
-      console.log(result);
-
-      return NextResponse.json(data);
+      return NextResponse.json(parsed.data, { status: 200 });
     } else {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
@@ -123,19 +116,32 @@ export async function POST(req: Request) {
 
     const id = decoded.sub;
 
-    if (decoded.permissions[0] === "baseUser") {
-      const { name, address, city, state } = await req.json();
+    if (decoded.permissions.includes("baseUser")) {
+      const json = await req.json();
 
-      await fetchMutation(api.submitLocation.submit, {
-        name: name,
-        address: address,
-        city: city,
-        state: state,
+      const input = {
+        name: json.name,
+        address: json.address,
+        city: json.city,
+        state: json.state,
         userId: id,
-      });
+      };
+
+      const parsed = insertLocationType.safeParse(input);
+
+      if (!parsed.success) {
+        return NextResponse.json(
+          {
+            Error: "Input is not correct format",
+          },
+          { status: 400 }
+        );
+      }
+
+      await fetchMutation(api.submitLocation.submit, parsed.data);
       return NextResponse.json(
         { success: true, station: "created" },
-        { status: 201 }
+        { status: 200 }
       );
     } else {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });

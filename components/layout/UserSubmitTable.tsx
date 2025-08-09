@@ -8,11 +8,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { responseType } from "@/app/api/submit/route";
+import { userSubmitType } from "@/app/api/submit/route";
 import SubmitSelect from "./SubmitSelect";
 
 type UserSubmitTableProps = {
-  data: responseType[];
+  data: userSubmitType[];
 };
 
 const UserSubmitTable = ({ data }: UserSubmitTableProps) => {
@@ -31,8 +31,8 @@ const UserSubmitTable = ({ data }: UserSubmitTableProps) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((row, index) => (
-            <TableRow key={index}>
+          {data.map((row) => (
+            <TableRow key={row.id}>
               <TableCell className="font-medium">{row.name}</TableCell>
               <TableCell>{row.street}</TableCell>
               <TableCell>{row.city}</TableCell>
