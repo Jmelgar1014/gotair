@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+} from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 
 type responseType = {
@@ -47,6 +54,8 @@ export const PermissionProvider = ({
 
         const data = await response.json();
 
+        localStorage.setItem("role", data.permission ?? "");
+
         setAuthToken(token);
         setResult(data);
         setRole(data.permission);
@@ -54,20 +63,25 @@ export const PermissionProvider = ({
         console.log(error);
       }
     };
+    const cachedRole = localStorage.getItem("role");
+    if (cachedRole) {
+      setRole(cachedRole); // UI is instant
+    }
 
     fetchToken();
   }, [getAccessTokenSilently]);
 
-  const getPermissions = async () => {
+  const getPermissions = useCallback(async () => {
     if (!authToken) return null;
     // Decode or fetch permissions using the token here
     return "permissionValue";
-  };
-
+  }, [authToken]);
+  const value = useMemo(
+    () => ({ authToken, role, result, getPermissions }),
+    [authToken, role, result, getPermissions]
+  );
   return (
-    <PermissionContext.Provider
-      value={{ authToken, role, getPermissions, result }}
-    >
+    <PermissionContext.Provider value={value}>
       {children}
     </PermissionContext.Provider>
   );

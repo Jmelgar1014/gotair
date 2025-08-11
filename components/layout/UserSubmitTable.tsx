@@ -18,6 +18,11 @@ type UserSubmitTableProps = {
 const UserSubmitTable = ({ data }: UserSubmitTableProps) => {
   return (
     <>
+      <div>
+        <h1 className="text-4xl font-semibold mb-4 p-4 underline">
+          User Submissions
+        </h1>
+      </div>
       <Table>
         <TableCaption>Recent User Submissions</TableCaption>
         <TableHeader>
@@ -50,4 +55,4 @@ const UserSubmitTable = ({ data }: UserSubmitTableProps) => {
   );
 };
 
-export default UserSubmitTable;
+export default React.memo(UserSubmitTable);

@@ -14,14 +14,6 @@ interface jwtType {
 
 const AddStation = ({ jwt }: jwtType) => {
   const [fetchState, setFetchState] = useState<string>("");
-
-  // type formType = {
-  //   name: string;
-  //   address: string;
-  //   lat: string;
-  //   lng: string;
-  // };
-
   type addStationType = z.infer<typeof addStationAdmin>;
   const [formData, setFormdata] = useState<addStationType>({
     name: "",

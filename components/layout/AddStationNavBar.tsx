@@ -32,4 +32,4 @@ const AddStationNavBar = () => {
   );
 };
 
-export default AddStationNavBar;
+export default React.memo(AddStationNavBar);

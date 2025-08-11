@@ -9,7 +9,17 @@
 [x] create admin dashboard to view all user submissions
 [x] create endpoint to get all rows from user submissions table
 []make ui a lot better
-[]add zod validation to endpoints and any inputs
+[x]add zod validation to endpoints and any inputs
 []improve endpoint response for all use cases
 [x]create context for jwt and permissions to not repeat code
 [x] paginate user submission table
+[]add endpoint to remove user submission duplicates
+[]add endpoint to remove from main table
+[]add column to main table to add price of air
+[]add feature to report issues with station(if pump is broken)
+[]add column to main table to show if pump accepts only cash or accepts multiple payment types
+[]add skeletons while loading
+[]add rate limits to endpoints
+[]improve performance of app
+[]add search input in admin dashboard
+[] refactor pages/components with a lot of state with useReducer

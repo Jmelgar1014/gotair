@@ -6,6 +6,7 @@ import { usePermissionContext } from "@/context/PermissionProvider";
 import { userSubmitType } from "@/app/api/submit/route";
 import { Button } from "@/components/ui/button";
 import { locationType } from "@/schema/submitLocationSchema";
+import DashboardNav from "@/components/layout/DashboardNav";
 
 const Page = () => {
   const { authToken, role } = usePermissionContext();
@@ -111,6 +112,9 @@ const Page = () => {
     <>
       <main>
         <AddStationNavBar />
+        <div className="flex justify-center">
+          <DashboardNav />
+        </div>
         {role === "Admin" && (
           <section>
             <div className="flex justify-center mt-8">

@@ -61,14 +61,6 @@ export default function MyMap({ list, location }: Props) {
         );
       })}
       <CurrentLocation />
-      {/* <Marker position={[51.505, -0.09]}>
-        <Popup>
-          A pretty CSS3 popup. <br /> Easily customizable.
-        </Popup>
-      </Marker>
-      <Marker position={[40.61422, 286.24699]}>
-        <Popup>Titties</Popup>
-      </Marker> */}
     </MapContainer>
   );
 }

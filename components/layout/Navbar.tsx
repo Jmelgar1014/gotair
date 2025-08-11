@@ -25,7 +25,7 @@ const Navbar = ({
   useEffect(() => {
     const handler = setTimeout(() => {
       setSearchInput(localInput);
-    }, 500);
+    }, 200);
 
     return () => clearTimeout(handler);
   }, [localInput, setSearchInput]); // include all deps
@@ -34,6 +34,7 @@ const Navbar = ({
     // 1) Persist a “just logged out” flag
     try {
       sessionStorage.setItem("justLoggedOut", "true");
+      localStorage.removeItem("role");
     } catch (e) {
       console.warn("Unable to write sessionStorage:", e);
     }
@@ -132,4 +133,4 @@ const Navbar = ({
   );
 };
 
-export default Navbar;
+export default React.memo(Navbar);
