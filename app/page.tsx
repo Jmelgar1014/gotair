@@ -7,10 +7,11 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { usePermissionContext } from "@/context/PermissionProvider";
 import LegendCard from "@/components/layout/LegendCard";
+import { Skeleton } from "@/components/ui/skeleton";
 const DEFAULT_LOCATION: [number, number] = [51.5073509, -0.1277583];
 
 export default function Home() {
-  const { authToken, role } = usePermissionContext();
+  const { authToken, role, isLoading } = usePermissionContext();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchInput, setSearchInput] = useState<string>("");
@@ -91,6 +92,9 @@ export default function Home() {
       setSearchInput("");
     }
   }, [searchInput, router, searchParams]);
+
+  console.log("role:", role);
+  console.log("token", authToken);
 
   return (
     <>

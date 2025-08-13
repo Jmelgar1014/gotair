@@ -2,20 +2,29 @@
 import AddStationNavBar from "@/components/layout/AddStationNavBar";
 import UserSubmitTable from "@/components/layout/UserSubmitTable";
 import React, { useEffect, useState, useCallback } from "react";
-import { usePermissionContext } from "@/context/PermissionProvider";
 import { userSubmitType } from "@/app/api/submit/route";
 import { Button } from "@/components/ui/button";
 import { locationType } from "@/schema/submitLocationSchema";
 import DashboardNav from "@/components/layout/DashboardNav";
+import { useAuthorization } from "@/context/useAuthorization";
+import LoadingSkeleton from "@/components/layout/LoadingSkeleton";
+import { Skeleton } from "@/components/ui/skeleton";
+import TableSkeleton from "@/components/layout/TableSkeleton";
+
+const ROW_COUNT = 10;
 
 const Page = () => {
-  const { authToken, role } = usePermissionContext();
+  const { isAuthorized, isLoading, authToken } = useAuthorization(
+    ["Admin"],
+    "/"
+  );
   const [submission, setSubmissions] = useState<userSubmitType[]>([]);
   const [currentCursor, setCurrentCursor] = useState<string>("");
   const [nextCursor, setNextCursor] = useState<string>("");
   const [cursorHistory, setCursorHistory] = useState<string[]>([""]);
   const [currentPageIndex, setCurrentPageIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
+  const [dataFetched, setDataFetched] = useState<boolean>(false);
 
   const fetchData = useCallback(
     async (cursor: string) => {
@@ -98,15 +107,39 @@ const Page = () => {
         // Reset pagination state
         setCursorHistory([""]);
         setCurrentPageIndex(0);
+        setDataFetched(true);
       }
     };
-
+    setDataFetched(false);
     loadInitialData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authToken]);
 
   const hasPrevPage = currentPageIndex > 0;
   const hasNextPage = !!nextCursor;
+
+  if (!dataFetched) {
+    return (
+      <>
+        <AddStationNavBar />
+        <div className="flex justify-center">
+          <DashboardNav />
+        </div>
+        <section>
+          <div className="flex justify-center mt-8">
+            <div className="m-4 border rounded-md p-2 w-full sm:max-w-4xl">
+              <TableSkeleton />
+              {/* <UserSubmitTable data={submission} /> */}
+            </div>
+          </div>
+        </section>
+      </>
+    );
+  }
+
+  if (!isAuthorized) {
+    return null;
+  }
 
   return (
     <>
@@ -115,38 +148,37 @@ const Page = () => {
         <div className="flex justify-center">
           <DashboardNav />
         </div>
-        {role === "Admin" && (
-          <section>
-            <div className="flex justify-center mt-8">
-              <div className="m-4 border rounded-md p-2 w-full sm:max-w-4xl">
-                <UserSubmitTable data={submission} />
-                {submission.length > 0 && (
-                  <div className="flex justify-between items-center mt-4">
-                    <Button
-                      onClick={handlePrev}
-                      disabled={!hasPrevPage || loading}
-                      variant={hasPrevPage ? "default" : "secondary"}
-                    >
-                      {loading ? "Loading..." : "Previous Page"}
-                    </Button>
 
-                    <span className="text-sm text-gray-600">
-                      Page {currentPageIndex + 1}
-                    </span>
+        <section>
+          <div className="flex justify-center mt-8">
+            <div className="m-4 border rounded-md p-2 w-full sm:max-w-4xl">
+              <UserSubmitTable data={submission} />
+              {submission.length > 0 && (
+                <div className="flex justify-between items-center mt-4">
+                  <Button
+                    onClick={handlePrev}
+                    disabled={!hasPrevPage || loading}
+                    variant={hasPrevPage ? "default" : "secondary"}
+                  >
+                    {loading ? "Loading..." : "Previous Page"}
+                  </Button>
 
-                    <Button
-                      onClick={handleNext}
-                      disabled={!hasNextPage || loading}
-                      variant={hasNextPage ? "default" : "secondary"}
-                    >
-                      {loading ? "Loading..." : "Next Page"}
-                    </Button>
-                  </div>
-                )}
-              </div>
+                  <span className="text-sm text-gray-600">
+                    Page {currentPageIndex + 1}
+                  </span>
+
+                  <Button
+                    onClick={handleNext}
+                    disabled={!hasNextPage || loading || submission.length < 10}
+                    variant={hasNextPage ? "default" : "secondary"}
+                  >
+                    {loading ? "Loading..." : "Next Page"}
+                  </Button>
+                </div>
+              )}
             </div>
-          </section>
-        )}
+          </div>
+        </section>
       </main>
     </>
   );

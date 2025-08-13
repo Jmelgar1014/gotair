@@ -19,6 +19,7 @@ interface PermissionsContextValues {
   result: responseType | null;
   authToken: string;
   role: string;
+  isLoading: boolean;
   getPermissions: () => Promise<"permissionValue" | null>;
 }
 
@@ -31,12 +32,16 @@ export const PermissionProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, isAuthenticated, isLoading } = useAuth0();
   const [authToken, setAuthToken] = useState<string>("");
   const [role, setRole] = useState<string>("");
   const [result, setResult] = useState<responseType | null>(null);
 
   useEffect(() => {
+    if (!isAuthenticated || isLoading) {
+      return;
+    }
+
     const fetchToken = async () => {
       try {
         const token = await getAccessTokenSilently({
@@ -53,7 +58,7 @@ export const PermissionProvider = ({
         });
 
         const data = await response.json();
-
+        console.log(data);
         localStorage.setItem("role", data.permission ?? "");
 
         setAuthToken(token);
@@ -69,7 +74,7 @@ export const PermissionProvider = ({
     }
 
     fetchToken();
-  }, [getAccessTokenSilently]);
+  }, [getAccessTokenSilently, isAuthenticated, isLoading]);
 
   const getPermissions = useCallback(async () => {
     if (!authToken) return null;
@@ -77,8 +82,8 @@ export const PermissionProvider = ({
     return "permissionValue";
   }, [authToken]);
   const value = useMemo(
-    () => ({ authToken, role, result, getPermissions }),
-    [authToken, role, result, getPermissions]
+    () => ({ authToken, role, result, getPermissions, isLoading }),
+    [authToken, role, result, getPermissions, isLoading]
   );
   return (
     <PermissionContext.Provider value={value}>
