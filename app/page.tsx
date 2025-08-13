@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { usePermissionContext } from "@/context/PermissionProvider";
 import LegendCard from "@/components/layout/LegendCard";
-import { Skeleton } from "@/components/ui/skeleton";
+import MapSkeleton from "@/components/layout/MapSkeleton";
 const DEFAULT_LOCATION: [number, number] = [51.5073509, -0.1277583];
 
 export default function Home() {
@@ -95,6 +95,33 @@ export default function Home() {
 
   console.log("role:", role);
   console.log("token", authToken);
+
+  if (isLoading) {
+    return (
+      <>
+        <Navbar
+          searchInput={searchInput}
+          setSearchInput={setSearchInput}
+          onSearch={handleSearch}
+          role={role}
+        />
+
+        <main className="grid grid-cols-1 gap-8 w-full sm:flex  ">
+          <section className="w-full sm:max-w-96 p-4 ">
+            <div className="flex justify-center  m-2">
+              <LegendCard />
+            </div>
+            {role === "Admin" && <AddStation jwt={authToken} />}
+          </section>
+          <section className=" flex-1">
+            <div className="p-4 max-w-5xl h-full ">
+              <MapSkeleton />
+            </div>
+          </section>
+        </main>
+      </>
+    );
+  }
 
   return (
     <>

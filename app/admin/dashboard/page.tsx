@@ -7,17 +7,10 @@ import { Button } from "@/components/ui/button";
 import { locationType } from "@/schema/submitLocationSchema";
 import DashboardNav from "@/components/layout/DashboardNav";
 import { useAuthorization } from "@/context/useAuthorization";
-import LoadingSkeleton from "@/components/layout/LoadingSkeleton";
-import { Skeleton } from "@/components/ui/skeleton";
 import TableSkeleton from "@/components/layout/TableSkeleton";
 
-const ROW_COUNT = 10;
-
 const Page = () => {
-  const { isAuthorized, isLoading, authToken } = useAuthorization(
-    ["Admin"],
-    "/"
-  );
+  const { isAuthorized, authToken } = useAuthorization(["Admin"], "/");
   const [submission, setSubmissions] = useState<userSubmitType[]>([]);
   const [currentCursor, setCurrentCursor] = useState<string>("");
   const [nextCursor, setNextCursor] = useState<string>("");
