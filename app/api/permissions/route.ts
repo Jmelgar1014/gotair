@@ -30,14 +30,18 @@ export async function POST(req: Request) {
   const authHeader = req.headers.get("authorization");
 
   if (!authHeader) {
-    return Response.json({ error: "No token provided" }, { status: 401 });
+    return Response.json({
+      error: { message: "No Token Provide", status: 401 },
+    });
   }
 
   const parts = authHeader.split(" ");
   const token = parts.length > 1 ? parts[1] : null;
 
   if (!token) {
-    return Response.json({ error: "Token malformed" }, { status: 401 });
+    return Response.json({
+      error: { message: "Token malformed", status: 401 },
+    });
   }
 
   const verifyJwt = () =>
@@ -55,8 +59,12 @@ export async function POST(req: Request) {
 
     // Do your permission checks here using decoded
 
-    return Response.json({ message: "Token is valid!", permission });
+    return Response.json({
+      message: "Token is valid!",
+      permission,
+      status: 200,
+    });
   } catch (error) {
-    return Response.json({ error: error }, { status: 401 });
+    return Response.json({ error: { message: error, status: 401 } });
   }
 }

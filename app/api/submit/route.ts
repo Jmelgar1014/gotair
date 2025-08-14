@@ -43,14 +43,18 @@ export async function GET(req: Request) {
   const authHeader = req.headers.get("authorization");
 
   if (!authHeader) {
-    return Response.json({ error: "No token provided" }, { status: 401 });
+    return Response.json({
+      error: { message: "No token provided", status: 401 },
+    });
   }
 
   const parts = authHeader.split(" ");
   const token = parts.length > 1 ? parts[1] : null;
 
   if (!token) {
-    return Response.json({ error: "Token malformed" }, { status: 401 });
+    return Response.json({
+      error: { message: "Token malformed", status: 401 },
+    });
   }
 
   const verifyJwt = () =>
@@ -76,16 +80,18 @@ export async function GET(req: Request) {
 
       if (!parsed.success) {
         return NextResponse.json({
-          error: "Response Error",
+          error: { message: "Response Error" },
         });
       }
 
       return NextResponse.json(parsed.data, { status: 200 });
     } else {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json({
+        error: { message: "Forbidden", status: 403 },
+      });
     }
   } catch (error) {
-    console.log(error);
+    return NextResponse.json({ error: { message: error, status: 403 } });
   }
 }
 
@@ -93,14 +99,18 @@ export async function POST(req: Request) {
   const authHeader = req.headers.get("authorization");
 
   if (!authHeader) {
-    return Response.json({ error: "No token provided" }, { status: 401 });
+    return Response.json({
+      error: { message: "No token provided", status: 401 },
+    });
   }
 
   const parts = authHeader.split(" ");
   const token = parts.length > 1 ? parts[1] : null;
 
   if (!token) {
-    return Response.json({ error: "Token malformed" }, { status: 401 });
+    return Response.json({
+      error: { message: "Token malformed", status: 401 },
+    });
   }
 
   const verifyJwt = () =>
@@ -130,12 +140,13 @@ export async function POST(req: Request) {
       const parsed = insertLocationType.safeParse(input);
 
       if (!parsed.success) {
-        return NextResponse.json(
-          {
-            Error: "Input is not correct format",
+        return NextResponse.json({
+          error: {
+            message: "Input is not correct format",
+
+            status: 400,
           },
-          { status: 400 }
-        );
+        });
       }
 
       await fetchMutation(api.submitLocation.submit, parsed.data);
@@ -144,7 +155,9 @@ export async function POST(req: Request) {
         { status: 200 }
       );
     } else {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json({
+        error: { message: "Forbidden", status: 403 },
+      });
     }
   } catch (error) {
     console.log(error);

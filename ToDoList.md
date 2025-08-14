@@ -23,3 +23,4 @@
 []improve performance of app
 []add search input in admin dashboard
 [] refactor pages/components with a lot of state with useReducer
+[] add tests

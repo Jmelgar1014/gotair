@@ -35,14 +35,18 @@ export async function POST(req: Request) {
   const authHeader = req.headers.get("authorization");
 
   if (!authHeader) {
-    return Response.json({ error: "No token provided" }, { status: 401 });
+    return Response.json({
+      error: { message: "No token provided", status: 401 },
+    });
   }
 
   const parts = authHeader.split(" ");
   const token = parts.length > 1 ? parts[1] : null;
 
   if (!token) {
-    return Response.json({ error: "Token malformed" }, { status: 401 });
+    return Response.json({
+      error: { message: "Token malformed", status: 401 },
+    });
   }
 
   const verifyJwt = () =>
@@ -56,13 +60,15 @@ export async function POST(req: Request) {
   try {
     const decoded = (await verifyJwt()) as jwtPayload;
 
-    if (decoded.permissions[0] === "Admin") {
+    if (decoded.permissions.includes("Admin")) {
       const json = await req.json();
 
       const parsed = addStationAdmin.safeParse(json);
 
       if (!parsed.success) {
-        return NextResponse.json({ error: parsed.error }, { status: 400 });
+        return NextResponse.json({
+          error: { message: parsed.error, status: 400 },
+        });
       }
 
       await fetchMutation(api.addStation.addStation, parsed.data);
@@ -74,6 +80,6 @@ export async function POST(req: Request) {
       return;
     }
   } catch (error) {
-    console.log(error);
+    return NextResponse.json({ error: { message: error, status: 400 } });
   }
 }
